@@ -75,7 +75,7 @@ module.exports.getLabel = function (repo) {
 }
 
 module.exports.listLabelsOnIssue = async function (octokit, eventOwner, eventRepo, eventIssueNumber) {
-  const options = octokit.rest.listLabelsOnIssue.endpoint.merge({
+  const options = octokit.rest.issues.listLabelsOnIssue.endpoint.merge({
     owner: eventOwner,
     repo: eventRepo,
     issue_number: eventIssueNumber,
