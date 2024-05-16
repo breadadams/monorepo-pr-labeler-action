@@ -33,7 +33,6 @@ module.exports.listFiles = async function (octokit, eventOwner, eventRepo, event
     .then((data) => {
       return data
     })
-
     .catch((err) => {
       console.log(err)
     })
@@ -73,4 +72,37 @@ module.exports.getLabel = function (repo) {
   const label = `${prefix}${separator}${repo}${separator}${suffix}`.trim()
 
   return label
+}
+
+module.exports.listLabelsOnIssue = async function (octokit, eventOwner, eventRepo, eventIssueNumber) {
+  const options = octokit.rest.listLabelsOnIssue.endpoint.merge({
+    owner: eventOwner,
+    repo: eventRepo,
+    issue_number: eventIssueNumber,
+  })
+
+  return await octokit
+    .paginate(options)
+    .then((data) => {
+      return data.map(label => label.name)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+};
+
+module.exports.removeLabel = function (octokit, eventOwner, eventRepo, eventIssueNumber, label) {
+  octokit.rest.issues
+    .removeLabel({
+      owner: eventOwner,
+      repo: eventRepo,
+      issue_number: eventIssueNumber,
+      name: label
+    })
+    .then(({ data, headers, status }) => {
+      // handle data
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }

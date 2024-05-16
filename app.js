@@ -40,6 +40,18 @@ async function prMonorepoRepoLabeler() {
       //reduce to unique repos
       const prFilesReposUnique = uniq(prFilesRepos)
 
+      //get existing labels
+      const existingLabels = await helpers.listLabelsOnIssue(octokit, eventOwner, eventRepo, eventIssueNumber)
+
+      //check for, and remove, any labels that don't apply to the PR
+      if (existingLabels && existingLabels.length) {
+        const labelsToRemove = existingLabels.filter(labelName => !prFilesReposUnique.includes(labelName))
+
+        labelsToRemove.forEach(label => {
+          helpers.removeLabel(octokit, eventOwner, eventRepo, eventIssueNumber, label)
+        })
+      }
+
       //add label for each monorepo repo
       prFilesReposUnique.forEach((repo) => {
         if (repo) {
